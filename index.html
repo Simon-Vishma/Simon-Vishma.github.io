@@ -128,17 +128,7 @@ button{font:inherit;color:inherit}
   10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(5px)}
   30%,50%,70%{transform:translateX(-9px)}40%,60%{transform:translateX(9px)}
 }
-.shard{position:fixed;z-index:11;overflow:hidden;pointer-events:none;will-change:transform,opacity}
-.shard .gate-card{
-  position:absolute;margin:0;animation:none;-webkit-backdrop-filter:none;backdrop-filter:none;
-  background:linear-gradient(160deg,rgba(62,74,108,.78),rgba(30,39,64,.74) 60%);
-}
-.impact{
-  position:fixed;z-index:11;width:12px;height:12px;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,rgba(255,255,255,.95),rgba(159,180,232,.45) 40%,rgba(159,180,232,0) 70%);
-  animation:impact 1s ease-out forwards;
-}
-@keyframes impact{from{transform:translate(-50%,-50%) scale(1);opacity:1}to{transform:translate(-50%,-50%) scale(70);opacity:0}}
+.dust{position:fixed;inset:0;width:100%;height:100%;z-index:11;pointer-events:none}
 
 /* ---------- level nodes ---------- */
 .levels{position:fixed;inset:0;z-index:12;pointer-events:none;transition:opacity .35s ease}
@@ -211,6 +201,8 @@ button{font:inherit;color:inherit}
 .list{
   list-style:none;margin:12px -8px 0 0;padding:0 8px 0 0;flex:1;min-height:0;overflow-y:auto;
   scrollbar-width:thin;scrollbar-color:rgba(169,180,207,.3) transparent;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 14px,#000 calc(100% - 26px),transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0,#000 14px,#000 calc(100% - 26px),transparent 100%);
 }
 .item{border-bottom:1px solid rgba(232,236,247,.08)}
 .item:last-child{border-bottom:0}
@@ -225,6 +217,20 @@ button{font:inherit;color:inherit}
 .item-body>div{overflow:hidden}
 .item-body p{margin:0;padding:0 4px 14px 34px;color:#C3CBE0;font-size:.95rem;line-height:1.6}
 .item.open .item-body{grid-template-rows:1fr}
+.list--chips{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-top:4px;padding-bottom:6px}
+.list--chips .item{border:0}
+.chip{
+  display:inline-flex;width:auto;gap:8px;padding:8px 14px 8px 10px;border-radius:16px;
+  border:1px solid rgba(232,236,247,.16);background:rgba(232,236,247,.035);color:#BCC5DB;
+  transition:background .35s,border-color .35s,color .35s,box-shadow .35s;
+}
+.chip:hover{border-color:rgba(232,236,247,.32)}
+.chip .item-title{font-size:1rem;line-height:1.25}
+.chip .item-glint{display:inline-flex}
+.chip .item-glint svg{width:12px;height:12px}
+.item.read .chip{background:rgba(232,236,247,.11);border-color:rgba(232,236,247,.42);color:var(--moonmilk);box-shadow:0 0 18px -6px rgba(159,180,232,.6)}
+.item.pop .item-glint svg{animation:glintPop .65s cubic-bezier(.34,1.56,.64,1)}
+@keyframes glintPop{0%{transform:scale(.6)}45%{transform:scale(1.9) rotate(45deg)}100%{transform:scale(1.15)}}
 .panel-foot{display:flex;align-items:center;justify-content:space-between;gap:10px 12px;padding-top:14px;flex-wrap:wrap}
 .progress{font-size:.85rem;color:var(--mist)}
 .btn-complete{
@@ -262,6 +268,10 @@ button{font:inherit;color:inherit}
   -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);opacity:0;transition:opacity .5s ease;
 }
 .timeline.open{opacity:1}
+.timeline::before{
+  content:"";position:absolute;z-index:1;left:0;right:0;top:0;height:calc(72px + env(safe-area-inset-top,0px));pointer-events:none;
+  background:linear-gradient(180deg,rgba(9,12,22,.96) 40%,rgba(9,12,22,0));
+}
 .tl-scroll{position:absolute;inset:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .tl-back{
   appearance:none;position:absolute;z-index:2;top:calc(14px + env(safe-area-inset-top,0px));left:14px;
@@ -287,9 +297,10 @@ button{font:inherit;color:inherit}
   content:"";position:absolute;left:3.5px;bottom:4px;width:2px;height:90px;
   background:linear-gradient(0deg,rgba(232,236,247,.85),rgba(232,236,247,0));border-radius:2px;
 }
-.tl-item{position:relative;width:50%;padding:0 46px 70px 0}
-.tl-item:nth-child(even){margin-left:50%;padding:0 0 70px 46px}
-.tl-dot{position:absolute;top:26px;right:-9px;width:18px;height:18px}
+.tl-item{position:relative;width:50%;padding:0 46px 56px 0}
+.tl-item:nth-child(even){margin-left:50%;padding:0 0 56px 46px}
+@media (min-width:721px){.tl-item+.tl-item{margin-top:-44px}}
+.tl-dot{position:absolute;top:24px;right:-9px;width:18px;height:18px}
 .tl-item:nth-child(even) .tl-dot{right:auto;left:-9px}
 .tl-dot svg{width:100%;height:100%;display:block;fill:var(--ink);stroke:rgba(232,236,247,.55);stroke-width:1.3;transition:fill .6s,stroke .6s,filter .6s}
 .tl-item.in .tl-dot svg{fill:var(--moonmilk);stroke:var(--moonmilk);filter:drop-shadow(0 0 6px rgba(159,180,232,.9))}
@@ -307,6 +318,7 @@ button{font:inherit;color:inherit}
 .tl-date{font-family:var(--serif);font-style:italic;color:var(--ember-soft);font-size:1.05rem;margin:0 0 4px}
 .tl-title{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.2;margin:0 0 8px}
 .tl-text{margin:0;color:#C6CEE2;font-size:.98rem;line-height:1.62}
+.tl-text--lead{font-family:var(--serif);font-size:1.2rem;line-height:1.45;color:var(--moonmilk)}
 .tl-foot{text-align:center;padding:6px 24px calc(90px + env(safe-area-inset-bottom,0px))}
 .tl-foot p{font-family:var(--serif);font-style:italic;font-size:clamp(1.2rem,1rem + .8vw,1.5rem);margin:0 auto 22px;max-width:30ch;line-height:1.35}
 
@@ -596,11 +608,11 @@ const MOON_BRIGHTNESS = 0.8;              // 0.5 (dim) to 1 (full photo brightne
 // Stage 0: the gate
 const LOGIN_TITLE       = "A storybook, kept under the moon";
 const LOGIN_SUBTITLE    = "Answer one question to open it.";
-const LOGIN_QUESTION    = "What do I call you when it’s just us?";
+const LOGIN_QUESTION    = "How many wives did JBR have?";
 const LOGIN_PLACEHOLDER = "Type your answer";
-const CORRECT_ANSWERS   = ["starlight", "my starlight"];  // not case-sensitive
-const WRONG_ANSWER_MSG  = "Not quite. Try the name only I use.";
-const LOGIN_HINT        = "Hint: look up tonight.";      // shown after two misses
+const CORRECT_ANSWERS   = ["42", "forty two"];  // not case-sensitive; add more if you like
+const WRONG_ANSWER_MSG  = "Not quite. Try again.";
+const LOGIN_HINT        = "Hint: it’s a number.";        // shown after two misses
 const EMPTY_ANSWER_MSG  = "Type an answer first.";
 
 // What the character says (one bubble per line)
@@ -617,27 +629,93 @@ const FINAL_LINES = [
 
 const LEVEL_NAMES = ["Little things", "Our story", "The gift"];
 
-// Stage 1: the list (every item must be opened to finish)
+// Stage 1: the list
+// A plain line lights up when tapped. Every item has to be lit to finish.
+// (You can also write { title: "...", text: "..." } to make an item open and show a note.)
 const LIST_TITLE = "Little things I love about you";
-const LIST_INTRO = "Open each one. Take your time.";
+const LIST_INTRO = "Tap each one to light it up.";
 const LIST_ITEMS = [
-  { title: "The way you laugh",             text: "It starts quietly and then takes over the whole room. It’s my favourite sound." },
-  { title: "How you notice everything",     text: "The moon, a stray cat, the exact moment I’m tired. You always see it first." },
-  { title: "Your terrible, wonderful playlists", text: "Nobody else could put those songs side by side and make it work." },
-  { title: "The small notes",               text: "Every note you’ve left in a coat pocket or a book, I’ve kept." },
-  { title: "That you stayed",               text: "On the hard days and the ordinary ones. Thank you for staying." }
+  "Superstore",
+  "Pashupatinath ma doctor",
+  "Empathy",
+  "Humor",
+  "When sharing stories",
+  "1/160 bully but wak swatantrata",
+  "W family",
+  "Kindness/forgiveness. + Awareness of privilege.",
+  "Selenophilia",
+  "Ability to keep quiet.",
+  "Habit of nail scraping.",
+  "Sonder and ponder",
+  "Constant guilt",
+  "Smile",
+  "That one eye smaller than other",
+  "Your love for bikes",
+  "The food you bake",
+  "The photos you click",
+  "The nose you say is bango",
+  "Your dark circles, eyebags, etc",
+  "The pout you do in photos",
+  "How loved you are by friends",
+  "How you love your friends",
+  "The big water bottle",
+  "Your resting stone cold face",
+  "Politician in debate",
+  "The books",
+  "Piano learned",
+  "Horses ridden",
+  "Did I say humor?",
+  "DID I SAY HUMOR?",
+  "Love for kids.",
+  "Habit of making lists",
+  "Your awkwardness around strangers",
+  "Your comfort around your people",
+  "Nicknames",
+  "Gifts you keep",
+  "Retired ambassador ma’am",
+  "Oggy",
+  "Self awareness",
+  "Reflexive thinking",
+  "Overthinking",
+  "Bullying",
+  "You like being offered a hand when rising or going down",
+  "Oscillation",
+  "Trauma are same"
 ];
 
 // Stage 2: the timeline
 const TIMELINE_TITLE = "Our story, so far";
 const TIMELINE_INTRO = "Scroll slowly. Every date here meant something.";
+// Leave date as "" for entries without a date. A title is optional too.
 const TIMELINE = [
-  { date: "12 March 2021",    title: "The first hello",           text: "A borrowed pen, a nervous joke, and a conversation that didn’t want to end." },
-  { date: "2 April 2021",     title: "Our first walk home",       text: "We took the long way. Neither of us said why." },
-  { date: "19 August 2021",   title: "The night of too many stars", text: "We lay on the grass and you named every constellation wrong, on purpose." },
-  { date: "25 December 2022", title: "A winter to remember",      text: "Cold hands, warm tea, and the ugliest jumper I have ever loved." },
-  { date: "6 June 2024",      title: "The trip that went sideways", text: "Missed train, wrong town, best day. I’d get lost with you again." },
-  { date: "Today",            title: "This little storybook",     text: "Made slowly, late at night, thinking of you the whole time." }
+  { date: "February",     text: "We talked for the first time." },
+  { date: "March",        text: "We really began talking." },
+  { date: "March 30",     text: "It was the first time I left you on delivered." },
+  { date: "April 1",      text: "You decided to push me away." },
+  { date: "April 9",      text: "You returned." },
+  { date: "",             text: "We spent a week barely maintaining contact." },
+  { date: "",             text: "April flew by but we reconnected properly during the preboards." },
+  { date: "April 30",     text: "I confessed." },
+  { date: "May 1",        text: "We called each other by our names for the first time. Roshainism died." },
+  { date: "May 2",        text: "You removed me from Priv. Acc." },
+  { date: "May 28",       text: "We started talking. On. WhatsApp." },
+  { date: "June 5",       text: "Royal Enfield ko Sisa is prettiest. Baccha haruko singing is pretty. The weather is nice. We were happy, right?" },
+  { date: "June 5",       text: "I got to know “sonder and ponder” and I {redacted}" },
+  { date: "June 11",      text: "I said “weep for me”" },
+  { date: "June 12",      text: "I got to know about Billionaires, Romance, and Ahem." },
+  { date: "June 15",      text: "Exams (or WhatsApp arc) ended." },
+  { date: "July 10",      text: "Result came." },
+  { date: "July 16",      text: "I bid you farewell. And set off to find meaning in life." },
+  { date: "July 20",      text: "I realised something. The Tale of Odysseus." },
+  { date: "July 25",      text: "I returned to Nepal." },
+  { date: "July 31",      text: "You sent some screenshots. I wanted to say something. But I did not want to impose in your trauma." },
+  { date: "August 1",     text: "I vowed to tell you the Tale of Odysseus." },
+  { date: "August 5",     text: "I returned home to tell you something. But then you cleared our nicknames." },
+  { date: "August 6",     text: "You blocked me from seeing stories and then unblocked me again." },
+  { date: "",             text: "Somewhere around that time, you seem to have blocked me on WhatsApp." },
+  { date: "August 27",    text: "You replied with something and deleted the message." },
+  { date: "August 29",    text: "You deactivated your account." },
+  { date: "September 24", text: "We talked outside class. We still had crescent moon." }
 ];
 const TIMELINE_OUTRO = "And there are so many pages still to write.";
 
@@ -856,6 +934,7 @@ const Sky = (() => {
   return {
     init() { glint = makeGlint(); resize(); },
     resize, frame,
+    sprite: () => glint,
     stop() { running = false; }
   };
 })();
@@ -973,9 +1052,9 @@ function placeStage1() {
     maxX = Math.max(maxX, x);
     if (nodes[i]) { nodes[i].style.left = (x - node / 2) + 'px'; nodes[i].style.top = (y - node / 2) + 'px'; }
   });
-  const left = L.portrait ? L.edge(L.cy) + 10 : maxX + node / 2 + clamp(L.S * .03, 10, 22);
-  const right = L.portrait ? W - 12 : Math.min(W - 16, Math.max(L.cx + L.R + L.S * .2, left + 340));
-  const h = Math.min(L.portrait ? L.S * 1.08 : L.S * .9, H - 40);
+  const left = L.portrait ? Math.max(12, L.edge(L.cy) - 30) : maxX + node / 2 + clamp(L.S * .03, 10, 22);
+  const right = L.portrait ? W - 12 : Math.min(W - 16, Math.max(L.cx + L.R + L.S * .3, left + 400));
+  const h = Math.min(L.portrait ? Math.max(L.S * 1.5, H * .62) : L.S * .9, H - (L.portrait ? 110 : 40));
   const top = clamp(L.cy - h / 2, 20, H - 20 - h);
   const w = right - left, curve = Math.min(w * .2, h * .22, 110);
   Object.entries({ '--pl': left, '--pt': top, '--pw': w, '--ph': h, '--curve': curve })
@@ -1147,53 +1226,59 @@ gateCard.addEventListener('submit', (e) => {
 });
 function shakeGate() { gate.classList.remove('shake'); void gate.offsetWidth; gate.classList.add('shake'); }
 
-function shatter() {
-  const rect = gateCard.getBoundingClientRect(), br = gateSubmit.getBoundingClientRect();
-  const ix = br.left + br.width / 2, iy = br.top + br.height / 2;
+function dissolveGate() {
+  const rect = gateCard.getBoundingClientRect();
   gate.classList.add('broken');
+  gateCard.style.animation = 'none';
   if (reduceMotion) { gate.classList.add('fade-out'); setTimeout(() => gate.remove(), 700); return; }
-  const cols = 5, rows = 6, pts = [];
-  for (let y = 0; y <= rows; y++) {
-    pts[y] = [];
-    for (let x = 0; x <= cols; x++) {
-      let px = x / cols * rect.width, py = y / rows * rect.height;
-      if (x > 0 && x < cols) px += (Math.random() - .5) * rect.width / cols * .7;
-      if (y > 0 && y < rows) py += (Math.random() - .5) * rect.height / rows * .7;
-      pts[y][x] = [px, py];
+
+  const cv = document.createElement('canvas'); cv.className = 'dust';
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR);
+  document.body.appendChild(cv);
+  const g = cv.getContext('2d'); g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  const spark = Sky.sprite();
+  const sweep = 1100, parts = [];
+  const N = Math.round(clamp(rect.width * rect.height / 520, 160, 380));
+  const tints = ['255,255,255', '214,226,255', '232,236,247', '248,232,194'];
+  for (let i = 0; i < N; i++) {
+    const fy = Math.random(), y = rect.top + rect.height * fy;
+    parts.push({
+      x: rect.left + Math.random() * rect.width, y,
+      t0: (1 - fy) * sweep * .85 + Math.random() * 160,
+      life: 1400 + Math.random() * 1500,
+      vx: (Math.random() - .5) * 40, vy: -(18 + Math.random() * 64),
+      r: .6 + Math.pow(Math.random(), 2) * 2.2, glint: Math.random() < .16, gs: 8 + Math.random() * 11,
+      tw: 3 + Math.random() * 7, ph: Math.random() * 6.283, tint: tints[(Math.random() * tints.length) | 0]
+    });
+  }
+  const setMask = (v) => { gateCard.style.webkitMaskImage = v; gateCard.style.maskImage = v; };
+  const t0 = performance.now();
+  (function step(now) {
+    const t = now - t0, p = clamp(t / sweep, 0, 1);
+    const X = -22 + easeInOut(p) * 124;
+    setMask(`linear-gradient(to top, transparent ${X.toFixed(1)}%, #000 ${(X + 22).toFixed(1)}%)`);
+    gateCard.style.opacity = String(1 - clamp((p - .55) / .45, 0, 1) * .6);
+    g.clearRect(0, 0, W, H);
+    let alive = false;
+    for (const q of parts) {
+      const age = t - q.t0;
+      if (age < 0) { alive = true; continue; }
+      if (age > q.life) continue;
+      alive = true;
+      const k = age / q.life, s2 = age / 1000;
+      const a = Math.min(1, age / 140) * (1 - k) * (1 - k) * (.65 + .35 * Math.sin(s2 * q.tw + q.ph));
+      const x = q.x + q.vx * s2 + Math.sin(s2 * 1.8 + q.ph) * 6, y = q.y + q.vy * s2 - 12 * s2 * s2;
+      if (q.glint && spark) {
+        g.globalAlpha = a; g.drawImage(spark, x - q.gs / 2, y - q.gs / 2, q.gs, q.gs); g.globalAlpha = 1;
+      } else {
+        g.fillStyle = `rgba(${q.tint},${a.toFixed(3)})`;
+        g.beginPath(); g.arc(x, y, q.r, 0, 6.283); g.fill();
+      }
     }
-  }
-  const tris = [];
-  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
-    const a = pts[y][x], b = pts[y][x + 1], c = pts[y + 1][x + 1], d = pts[y + 1][x];
-    if ((x + y) % 2) tris.push([a, b, c], [a, c, d]); else tris.push([a, b, d], [b, c, d]);
-  }
-  const proto = gateCard.cloneNode(true);
-  proto.removeAttribute('id'); proto.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
-  const pi = proto.querySelector('input'); if (pi) { pi.setAttribute('value', input.value); pi.removeAttribute('name'); }
-  proto.style.width = rect.width + 'px'; proto.style.height = rect.height + 'px';
-  const frag = document.createDocumentFragment(), anims = [];
-  tris.forEach(t => {
-    const xs = t.map(p => p[0]), ys = t.map(p => p[1]);
-    const bx = Math.min(...xs), by = Math.min(...ys), bw = Math.max(...xs) - bx, bh = Math.max(...ys) - by;
-    const s = document.createElement('div'); s.className = 'shard';
-    s.style.cssText = `left:${rect.left + bx}px;top:${rect.top + by}px;width:${bw + 1}px;height:${bh + 1}px;clip-path:polygon(${t.map(p => `${(p[0] - bx).toFixed(1)}px ${(p[1] - by).toFixed(1)}px`).join(',')})`;
-    const cl = proto.cloneNode(true); cl.style.left = -bx + 'px'; cl.style.top = -by + 'px';
-    s.appendChild(cl); frag.appendChild(s);
-    const cx = rect.left + (xs[0] + xs[1] + xs[2]) / 3, cy = rect.top + (ys[0] + ys[1] + ys[2]) / 3;
-    let dx = cx - ix, dy = cy - iy; const dist = Math.hypot(dx, dy) || 1; dx /= dist; dy /= dist;
-    const force = 220 + Math.random() * 380 + 60000 / (dist + 120);
-    const tx = dx * force, ty = dy * force * .8 - 50, grav = 360 + Math.random() * 260;
-    const rot = (Math.random() - .5) * 540, rx = (Math.random() - .5) * 170, ry = (Math.random() - .5) * 170;
-    const tf = (f, g2) => `perspective(700px) translate3d(${(tx * f).toFixed(1)}px, ${(ty * f + grav * g2).toFixed(1)}px, 0) rotate(${(rot * f).toFixed(1)}deg) rotateX(${(rx * f).toFixed(1)}deg) rotateY(${(ry * f).toFixed(1)}deg)`;
-    anims.push([s, [{ transform: tf(0, 0), opacity: 1 }, { transform: tf(.55, .12), opacity: .95, offset: .35 }, { transform: tf(1, 1), opacity: 0 }],
-      { duration: 1150 + Math.random() * 700, delay: dist * .3, easing: 'cubic-bezier(.2,.65,.35,1)', fill: 'forwards' }]);
-  });
-  document.body.appendChild(frag);
-  gateCard.style.visibility = 'hidden';
-  const imp = document.createElement('div'); imp.className = 'impact'; imp.style.left = ix + 'px'; imp.style.top = iy + 'px';
-  document.body.appendChild(imp);
-  anims.forEach(([el, kf, o]) => el.animate(kf, o));
-  setTimeout(() => { document.querySelectorAll('.shard,.impact').forEach(n => n.remove()); gate.remove(); }, 2400);
+    if (p >= 1) gateCard.style.visibility = 'hidden';
+    if (alive || p < 1) requestAnimationFrame(step);
+    else { cv.remove(); gate.remove(); }
+  })(t0);
 }
 
 function zoomMoon() {
@@ -1215,9 +1300,9 @@ function zoomMoon() {
 
 async function openStorybook() {
   gateMsg.textContent = '';
-  shatter();
+  dissolveGate();
   loadPortrait();
-  await wait(reduceMotion ? 100 : 260);
+  await wait(reduceMotion ? 100 : 420);
   const dur = zoomMoon();
   await wait(dur + 150);
   state.stage = 1;
@@ -1316,29 +1401,44 @@ function toast(msg) {
 }
 
 /* ---------------- level 1: list ---------------- */
+const ITEMS = LIST_ITEMS.map(it => typeof it === 'string' ? { title: it } : it);
+function markRead(i, li) {
+  if (state.read.has(i)) return;
+  state.read.add(i); li.classList.add('read', 'pop');
+  setTimeout(() => li.classList.remove('pop'), 700);
+  updateProgress();
+}
 function buildList() {
   $('#listTitle').textContent = LIST_TITLE; $('#listIntro').textContent = LIST_INTRO;
-  LIST_ITEMS.forEach((it, i) => {
+  const chips = ITEMS.every(it => !it.text);
+  list.classList.toggle('list--chips', chips);
+  ITEMS.forEach((it, i) => {
     const li = document.createElement('li'); li.className = 'item';
-    li.innerHTML = `<button type="button" class="item-btn" aria-expanded="false" aria-controls="item-${i}"><span class="item-glint">${GLINT}</span><span class="item-title">${esc(it.title)}</span></button><div class="item-body" id="item-${i}" role="region"><div><p>${esc(it.text)}</p></div></div>`;
-    const btn = li.querySelector('button');
-    btn.addEventListener('click', () => {
-      const open = !li.classList.contains('open');
-      li.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
-      if (open && !state.read.has(i)) { state.read.add(i); li.classList.add('read'); updateProgress(); }
-    });
+    if (!it.text) {
+      li.innerHTML = `<button type="button" class="item-btn${chips ? ' chip' : ''}" aria-pressed="false"><span class="item-glint">${GLINT}</span><span class="item-title">${esc(it.title)}</span></button>`;
+      const btn = li.querySelector('button');
+      btn.addEventListener('click', () => { btn.setAttribute('aria-pressed', 'true'); markRead(i, li); });
+    } else {
+      li.innerHTML = `<button type="button" class="item-btn" aria-expanded="false" aria-controls="item-${i}"><span class="item-glint">${GLINT}</span><span class="item-title">${esc(it.title)}</span></button><div class="item-body" id="item-${i}" role="region"><div><p>${esc(it.text)}</p></div></div>`;
+      const btn = li.querySelector('button');
+      btn.addEventListener('click', () => {
+        const open = !li.classList.contains('open');
+        li.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
+        if (open) markRead(i, li);
+      });
+    }
     list.appendChild(li);
   });
   updateProgress();
 }
 function updateProgress() {
-  const n = state.read.size, N = LIST_ITEMS.length, done = state.done.has(1);
-  progressEl.textContent = done ? 'All opened' : `${n} of ${N} opened`;
+  const n = state.read.size, N = ITEMS.length, done = state.done.has(1);
+  progressEl.textContent = done ? `All ${N} lit` : `${n} of ${N}`;
   completeBtn.disabled = n < N || done;
   completeBtn.classList.toggle('ready', n >= N && !done);
 }
 completeBtn.addEventListener('click', () => {
-  if (state.done.has(1) || state.read.size < LIST_ITEMS.length) return;
+  if (state.done.has(1) || state.read.size < ITEMS.length) return;
   state.done.add(1);
   completeBtn.classList.remove('ready'); completeBtn.classList.add('done'); completeBtn.textContent = 'Stage 1 complete';
   updateProgress();
@@ -1368,7 +1468,9 @@ function buildTimeline() {
   TIMELINE.forEach((mItem, i) => {
     const a = document.createElement('article'); a.className = 'tl-item';
     a.style.setProperty('--fd', (-(i % 3) * 2.2) + 's');
-    a.innerHTML = `<span class="tl-dot">${GLINT}</span><div class="tl-float"><div class="tl-card"><p class="tl-date">${esc(mItem.date)}</p><h3 class="tl-title">${esc(mItem.title)}</h3><p class="tl-text">${esc(mItem.text)}</p></div></div>`;
+    const date = mItem.date ? `<p class="tl-date">${esc(mItem.date)}</p>` : '';
+    const title = mItem.title ? `<h3 class="tl-title">${esc(mItem.title)}</h3>` : '';
+    a.innerHTML = `<span class="tl-dot">${GLINT}</span><div class="tl-float"><div class="tl-card">${date}${title}<p class="tl-text${mItem.title ? '' : ' tl-text--lead'}">${esc(mItem.text || '')}</p></div></div>`;
     tlTrack.appendChild(a); tlItems.push(a);
   });
   tlScroll.addEventListener('scroll', updateComet, { passive: true });
