@@ -8,7 +8,7 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23E8ECF7' d='M16.5 3.2A9.5 9.5 0 1 0 20.8 17A7.6 7.6 0 0 1 16.5 3.2Z'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Nunito:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Lora:wght@400;500&family=Mukta:wght@400;600;700&family=Nunito:wght@400;600;700&family=Tinos:ital@1&display=swap">
 <style>
 :root{
   --ink:#0B0F19; --dusk:#1A233A; --moonmilk:#E8ECF7; --mist:#A9B4CF; --halo:#9FB4E8;
@@ -16,7 +16,9 @@
   --blush:#F6D3DB; --lavender:#DCD2F3; --mint:#CDEADF; --butter:#F8E8C2; --sky:#D4E4F8;
   --plum:#3B3552; --paper:#FBF8F4;
   --serif:"IM Fell English","Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
-  --sans:"Nunito","Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --sans:"Nunito","Mukta","Nunito Sans",system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans Devanagari",sans-serif;
+  --times:"Times New Roman",Tinos,Times,"Liberation Serif","Nimbus Roman",serif;
+  --read:"Lora","Iowan Old Style",Georgia,serif;
   --moon-size:600px; --node:56px; --char-size:160px;
 }
 *,*::before,*::after{box-sizing:border-box}
@@ -103,10 +105,8 @@ button{font:inherit;color:inherit}
   animation:gateIn 1.3s cubic-bezier(.2,.7,.2,1) .35s both;
 }
 @keyframes gateIn{from{opacity:0;transform:translateY(18px) scale(.97)}to{opacity:1;transform:none}}
-.gate-crest{width:36px;height:36px;margin:0 auto 14px;display:block;fill:var(--moonmilk);filter:drop-shadow(0 0 10px rgba(159,180,232,.75))}
-.gate-card h1{text-wrap:balance;font-family:var(--serif);font-weight:400;font-size:clamp(1.6rem,1.2rem + 1.6vw,2.05rem);line-height:1.15;margin:0 0 8px}
-.gate-sub{margin:0 0 26px;color:var(--mist);font-size:.95rem;line-height:1.5}
-.gate-q{display:block;font-family:var(--serif);font-style:italic;font-size:1.22rem;line-height:1.35;margin-bottom:14px}
+.gate-crest{width:36px;height:36px;margin:0 auto 18px;display:block;fill:var(--moonmilk);filter:drop-shadow(0 0 10px rgba(159,180,232,.75))}
+.gate-q{display:block;font-family:var(--times);font-style:italic;font-weight:400;font-size:clamp(1.45rem,1.2rem + 1vw,1.8rem);line-height:1.3;margin:0 0 20px;text-wrap:balance}
 .gate-card input{
   width:100%;padding:14px 16px;border-radius:14px;border:1px solid rgba(169,180,207,.28);
   background:rgba(8,11,20,.45);color:var(--moonmilk);font:600 1.05rem var(--sans);text-align:center;
@@ -151,16 +151,21 @@ button{font:inherit;color:inherit}
   color:var(--moonmilk);text-shadow:0 1px 10px rgba(0,0,0,.75);pointer-events:none;transition:opacity .3s,color .3s;
 }
 .levels.panel-open .node-label{opacity:0}
-.node .lock,.node .done-mark{
+.node .done-mark{
   position:absolute;right:-5px;bottom:-5px;width:calc(var(--node) * .44);height:calc(var(--node) * .44);
   border-radius:50%;display:grid;place-items:center;transition:opacity .4s,transform .5s cubic-bezier(.34,1.56,.64,1);
+  background:var(--dusk);border:1px solid rgba(242,165,122,.6);opacity:0;transform:scale(.4);
 }
-.node .lock{background:var(--dusk);border:1px solid rgba(232,236,247,.28);color:var(--mist)}
-.node .lock svg{width:56%;height:56%}
-.node .done-mark{background:var(--dusk);border:1px solid rgba(242,165,122,.6);opacity:0;transform:scale(.4)}
 .node .done-mark svg{width:60%;height:60%;fill:var(--ember-soft)}
-.node:not(.locked) .lock{opacity:0;transform:scale(.4)}
-.node.locked{color:rgba(232,236,247,.45);border-color:rgba(232,236,247,.2);cursor:not-allowed}
+.node{transition-property:opacity,transform,background,border-color,color,box-shadow,filter}
+.node .fog{
+  position:absolute;left:calc(var(--node) * -.5);top:50%;width:calc(var(--node) * 2 + 9.5em);height:calc(var(--node) * 1.9);
+  transform:translateY(-50%);border-radius:50%;pointer-events:none;opacity:0;transition:opacity 1.2s ease;
+  background:radial-gradient(closest-side,rgba(150,158,176,.42),rgba(150,158,176,.18) 55%,rgba(150,158,176,0));
+}
+.node.locked{cursor:not-allowed}
+.levels.show .node.locked{opacity:.6;filter:blur(2.6px) grayscale(1)}
+.node.locked .fog{opacity:1}
 .node.locked .node-label{color:var(--mist)}
 .node.next{animation:breathe 2.8s ease-in-out infinite}
 @keyframes breathe{
@@ -191,58 +196,31 @@ button{font:inherit;color:inherit}
 }
 .panel.open{opacity:1;transform:none}
 .panel-head{position:relative;padding-right:40px}
-.panel-head h2{text-wrap:balance;font-family:var(--serif);font-weight:400;font-size:clamp(1.3rem,1.05rem + .9vw,1.7rem);line-height:1.15;margin:0 0 6px}
-.panel-head p{margin:0;color:var(--mist);font-size:.9rem;line-height:1.45}
 .icon-btn{
   appearance:none;position:absolute;top:-4px;right:-4px;width:34px;height:34px;padding:0;border-radius:50%;
   border:1px solid rgba(232,236,247,.18);background:rgba(11,15,25,.35);display:grid;place-items:center;cursor:pointer;
 }
 .icon-btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;stroke-linecap:round;fill:none}
 .list{
-  list-style:none;margin:12px -8px 0 0;padding:0 8px 0 0;flex:1;min-height:0;overflow-y:auto;
+  list-style:none;margin:6px -8px 0 0;padding:0 8px 0 0;flex:1;min-height:0;overflow-y:auto;outline:none;
   scrollbar-width:thin;scrollbar-color:rgba(169,180,207,.3) transparent;
   -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 14px,#000 calc(100% - 26px),transparent 100%);
   mask-image:linear-gradient(to bottom,transparent 0,#000 14px,#000 calc(100% - 26px),transparent 100%);
 }
-.item{border-bottom:1px solid rgba(232,236,247,.08)}
-.item:last-child{border-bottom:0}
-.item-btn{
-  appearance:none;width:100%;display:grid;grid-template-columns:18px 1fr;gap:12px;align-items:center;
-  padding:13px 4px;background:none;border:0;text-align:left;cursor:pointer;border-radius:10px;
-}
-.item-glint svg{width:16px;height:16px;display:block;fill:transparent;stroke:var(--mist);stroke-width:1.4;transition:fill .4s,stroke .4s,transform .6s,filter .4s}
-.item.read .item-glint svg{fill:var(--moonmilk);stroke:var(--moonmilk);filter:drop-shadow(0 0 6px rgba(159,180,232,.9));transform:scale(1.15)}
-.item-title{font-family:var(--serif);font-size:1.12rem;line-height:1.25}
-.item-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1)}
-.item-body>div{overflow:hidden}
-.item-body p{margin:0;padding:0 4px 14px 34px;color:#C3CBE0;font-size:.95rem;line-height:1.6}
-.item.open .item-body{grid-template-rows:1fr}
-.list--chips{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-top:4px;padding-bottom:6px}
-.list--chips .item{border:0}
-.chip{
-  display:inline-flex;width:auto;gap:8px;padding:8px 14px 8px 10px;border-radius:16px;
-  border:1px solid rgba(232,236,247,.16);background:rgba(232,236,247,.035);color:#BCC5DB;
-  transition:background .35s,border-color .35s,color .35s,box-shadow .35s;
-}
-.chip:hover{border-color:rgba(232,236,247,.32)}
-.chip .item-title{font-size:1rem;line-height:1.25}
-.chip .item-glint{display:inline-flex}
-.chip .item-glint svg{width:12px;height:12px}
-.item.read .chip{background:rgba(232,236,247,.11);border-color:rgba(232,236,247,.42);color:var(--moonmilk);box-shadow:0 0 18px -6px rgba(159,180,232,.6)}
-.item.pop .item-glint svg{animation:glintPop .65s cubic-bezier(.34,1.56,.64,1)}
-@keyframes glintPop{0%{transform:scale(.6)}45%{transform:scale(1.9) rotate(45deg)}100%{transform:scale(1.15)}}
-.panel-foot{display:flex;align-items:center;justify-content:space-between;gap:10px 12px;padding-top:14px;flex-wrap:wrap}
-.progress{font-size:.85rem;color:var(--mist)}
+.list:focus-visible{outline:2px solid var(--halo);outline-offset:4px}
+.row{padding:12px 4px 12px 2px;border-bottom:1px solid rgba(232,236,247,.09);font-family:var(--read);font-size:1.1rem;line-height:1.45;color:var(--moonmilk)}
+.row:first-child{padding-top:10px}
+.row:last-child{border-bottom:0;padding-bottom:18px}
+.row-text{display:block;margin-top:4px;font-family:var(--sans);font-size:.94rem;line-height:1.55;color:#C3CBE0}
+.panel-head{position:relative;height:26px;padding:0}
+.panel-foot{display:flex;align-items:center;justify-content:flex-end;padding-top:14px}
 .btn-complete{
-  appearance:none;border:1px solid rgba(232,236,247,.22);background:transparent;color:var(--mist);
-  padding:10px 18px;border-radius:999px;font-weight:700;font-size:.92rem;cursor:not-allowed;transition:.4s;
+  appearance:none;border:0;cursor:pointer;padding:11px 26px;border-radius:999px;
+  font-family:var(--sans);font-weight:700;font-size:1rem;letter-spacing:.01em;color:#2A1509;
+  background:linear-gradient(180deg,#F5B38C,#EC8A52);box-shadow:0 0 22px rgba(236,138,82,.35);transition:box-shadow .25s,transform .15s;
 }
-.btn-complete.ready{cursor:pointer;color:#2A1509;border-color:transparent;background:linear-gradient(180deg,#F5B38C,#EC8A52);animation:emberPulse 2s ease-in-out infinite}
-.btn-complete.done{cursor:default;color:var(--dusk);background:var(--moonmilk);border-color:transparent;animation:none}
-@keyframes emberPulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(236,138,82,.45),0 0 18px rgba(236,138,82,.3)}
-  50%{box-shadow:0 0 0 7px rgba(236,138,82,0),0 0 30px rgba(236,138,82,.6)}
-}
+.btn-complete:hover{box-shadow:0 0 30px rgba(236,138,82,.6)}
+.btn-complete:active{transform:scale(.98)}
 
 /* ---------- speech bubble ---------- */
 .bubble{
@@ -258,6 +236,16 @@ button{font:inherit;color:inherit}
   content:"";position:absolute;left:12px;bottom:-10px;width:20px;height:12px;background:#E2E7F4;
   clip-path:polygon(0 0,100% 0,0 100%);
 }
+.bubble.side{border-radius:20px;transform-origin:left center}
+.bubble.side::after{left:-9px;bottom:auto;top:calc(45% - 8px);width:11px;height:16px;clip-path:polygon(100% 0,100% 100%,0 50%);background:#ECEFF8}
+.bubble-next{
+  position:absolute;right:14px;bottom:-11px;width:22px;height:22px;border-radius:50%;
+  background:var(--dusk);border:1px solid rgba(232,236,247,.55);display:grid;place-items:center;
+  opacity:0;transform:scale(.6);transition:opacity .25s,transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.bubble-next svg{width:12px;height:12px;stroke:var(--moonmilk);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.bubble.waiting .bubble-next{opacity:1;transform:none;animation:nudge 1.3s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateY(3px)}}
 .bubble .ghost{visibility:hidden}
 .bubble .typed{position:absolute;left:18px;top:14px;right:18px}
 
@@ -283,7 +271,7 @@ button{font:inherit;color:inherit}
 .tl-head{max-width:640px;margin:0 auto;padding:86px 24px 8px;text-align:center}
 .tl-head h2{font-family:var(--serif);font-weight:400;font-size:clamp(2.1rem,1.4rem + 2.8vw,3.4rem);line-height:1.08;margin:0 0 12px}
 .tl-head p{margin:0;color:var(--mist);font-size:1rem;line-height:1.55}
-.tl-track{position:relative;max-width:980px;margin:48px auto 0;padding:10px 24px 30px}
+.tl-track{position:relative;max-width:980px;margin:calc(84px + env(safe-area-inset-top,0px)) auto 0;padding:10px 24px 30px}
 .tl-line{
   position:absolute;left:50%;top:0;bottom:0;width:1px;
   background:linear-gradient(180deg,rgba(232,236,247,0),rgba(232,236,247,.32) 5%,rgba(232,236,247,.32) 95%,rgba(232,236,247,0));
@@ -319,7 +307,7 @@ button{font:inherit;color:inherit}
 .tl-title{font-family:var(--serif);font-weight:400;font-size:1.5rem;line-height:1.2;margin:0 0 8px}
 .tl-text{margin:0;color:#C6CEE2;font-size:.98rem;line-height:1.62}
 .tl-text--lead{font-family:var(--serif);font-size:1.2rem;line-height:1.45;color:var(--moonmilk)}
-.tl-foot{text-align:center;padding:6px 24px calc(90px + env(safe-area-inset-bottom,0px))}
+.tl-foot{text-align:center;padding:24px 24px calc(90px + env(safe-area-inset-bottom,0px))}
 .tl-foot p{font-family:var(--serif);font-style:italic;font-size:clamp(1.2rem,1rem + .8vw,1.5rem);margin:0 auto 22px;max-width:30ch;line-height:1.35}
 
 /* ---------- countdown ---------- */
@@ -357,14 +345,6 @@ body.daylight{background:var(--paper);color:var(--plum)}
 .blob.b3{left:-18vmax;bottom:-34vmax;background:radial-gradient(circle,var(--mint) 0%,rgba(205,234,223,0) 68%);animation-duration:52s}
 .blob.b4{right:-24vmax;bottom:-30vmax;background:radial-gradient(circle,var(--butter) 0%,rgba(248,232,194,0) 68%);animation-duration:44s}
 @keyframes blobDrift{to{transform:translate(6vmax,4vmax) scale(1.08)}}
-.petal{
-  position:fixed;top:-30px;left:var(--x);width:13px;height:17px;border-radius:80% 0 80% 0;opacity:.85;pointer-events:none;
-  animation:fall var(--d) linear var(--dl) infinite;
-}
-@keyframes fall{
-  0%{transform:translate3d(0,-4vh,0) rotate(0deg)}
-  100%{transform:translate3d(var(--dx),108vh,0) rotate(var(--r))}
-}
 .reveal-inner{
   position:relative;min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:calc(30px + env(safe-area-inset-top,0px)) 20px calc(36px + env(safe-area-inset-bottom,0px));text-align:center;
@@ -378,60 +358,41 @@ body.daylight{background:var(--paper);color:var(--plum)}
   box-shadow:0 34px 70px -34px rgba(59,53,82,.42),0 0 0 1px rgba(59,53,82,.06);
 }
 .frame img{
-  display:block;max-width:100%;max-height:max(260px,calc(100vh - 330px));max-height:max(260px,calc(100dvh - 330px));width:auto;height:auto;margin:0 auto;
+  display:block;max-width:100%;max-height:max(260px,calc(100vh - 250px));max-height:max(260px,calc(100dvh - 250px));width:auto;height:auto;margin:0 auto;
   opacity:0;filter:blur(14px) saturate(.6);transform:scale(1.03);
   transition:opacity 2.4s ease,filter 3s ease,transform 3.4s cubic-bezier(.2,.8,.2,1);
 }
-.reveal-msg{font-family:var(--serif);font-style:italic;font-size:clamp(1.15rem,1rem + .5vw,1.35rem);line-height:1.45;margin:22px 0 4px;max-width:44ch;text-wrap:balance}
-.reveal-sign{margin:0 0 22px;color:rgba(59,53,82,.72);font-size:.95rem}
-.reveal-msg,.reveal-sign,.reveal .btn-soft{opacity:0;transform:translateY(10px);transition:opacity 1.2s ease,transform 1.2s ease}
-.reveal.bloom .reveal-title,.reveal.bloom .reveal-msg,.reveal.bloom .reveal-sign,.reveal.bloom .btn-soft{opacity:1;transform:none}
+.reveal .btn-soft{margin-top:28px;opacity:0;transform:translateY(10px);transition:opacity 1.2s ease 2.6s,transform 1.2s ease 2.6s,background .25s,border-color .25s,box-shadow .25s}
+.reveal.bloom .reveal-title,.reveal.bloom .btn-soft{opacity:1;transform:none}
 .reveal.bloom .frame img{opacity:1;filter:none;transform:none}
-.reveal.bloom .reveal-msg{transition-delay:2.2s}
-.reveal.bloom .reveal-sign{transition-delay:2.6s}
-.reveal.bloom .btn-soft{transition-delay:3.2s,3.2s,0s,0s}
 .btn-soft{
   appearance:none;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
   background:rgba(255,255,255,.65);border:1px solid rgba(59,53,82,.22);color:var(--plum);
-  padding:11px 20px 11px 16px;border-radius:999px;font-weight:600;font-size:.92rem;text-decoration:none;
+  padding:12px 22px 12px 18px;border-radius:999px;font-weight:600;font-size:.98rem;text-decoration:none;
   transition:background .25s,border-color .25s,box-shadow .25s;
 }
 .btn-soft:hover{background:#fff;border-color:rgba(59,53,82,.38);box-shadow:0 8px 24px -12px rgba(59,53,82,.35)}
 .btn-soft svg{width:15px;height:15px;fill:currentColor}
 
-/* ---------- time-lapse modal ---------- */
+/* ---------- time-lapse video ---------- */
 .lapse{
-  position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:20px;
-  background:rgba(59,53,82,.26);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:64px 16px 24px;
+  background:rgba(40,34,58,.62);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   opacity:0;transition:opacity .3s ease;
 }
 .lapse.open{opacity:1}
-.lapse-card{
-  position:relative;width:min(440px,100%);background:#fff;color:var(--plum);border-radius:22px;padding:22px 22px 24px;
-  box-shadow:0 40px 80px -30px rgba(59,53,82,.5);transform:translateY(12px) scale(.98);transition:transform .35s cubic-bezier(.2,.8,.2,1);
+.lapse-frame{
+  width:min(1000px,100%,calc((100vh - 110px) * 16 / 9));aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;
+  box-shadow:0 40px 90px -30px rgba(20,16,36,.75);transform:translateY(12px) scale(.98);transition:transform .35s cubic-bezier(.2,.8,.2,1);
 }
-.lapse.open .lapse-card{transform:none}
-.lapse-card .icon-btn{top:12px;right:12px;border-color:rgba(59,53,82,.18);background:rgba(255,255,255,.85);color:var(--plum)}
-.lapse-thumb{
-  display:grid;place-items:center;aspect-ratio:16/9;border-radius:14px;margin-bottom:18px;text-decoration:none;
-  background:linear-gradient(120deg,var(--blush),var(--lavender) 40%,var(--sky) 70%,var(--mint));
+.lapse-frame.tall{width:min(100%,calc((100vh - 110px) * 9 / 16));aspect-ratio:9/16}
+.lapse.open .lapse-frame{transform:none}
+.lapse-frame iframe,.lapse-frame video{display:block;width:100%;height:100%;border:0;background:#000}
+.lapse .lapse-close{
+  top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:40px;height:40px;
+  border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.9);color:var(--plum);
 }
-.lapse-thumb span{
-  width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.85);display:grid;place-items:center;
-  box-shadow:0 10px 30px -10px rgba(59,53,82,.45);transition:transform .25s;
-}
-.lapse-thumb:hover span{transform:scale(1.06)}
-.lapse-thumb svg{width:20px;height:20px;fill:var(--plum);margin-left:3px}
-.lapse-card h3{font-family:var(--serif);font-weight:400;font-size:1.6rem;margin:0 0 6px;padding-right:36px}
-.lapse-card p{margin:0 0 18px;line-height:1.55;color:rgba(59,53,82,.85);font-size:.95rem}
-.lapse-actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
-.btn-ink{
-  appearance:none;display:inline-flex;align-items:center;justify-content:center;padding:11px 20px;border-radius:999px;border:0;
-  background:var(--plum);color:var(--paper);font-weight:700;font-size:.92rem;text-decoration:none;cursor:pointer;
-}
-.btn-ink:hover{background:#2E2944}
-.lapse-url{margin:14px 0 0;font-size:.8rem;color:rgba(59,53,82,.6);word-break:break-all;user-select:all}
-.lapse-status{font-size:.85rem;color:rgba(59,53,82,.75);min-height:1.2em}
+body.lapse-open .sound{opacity:0;pointer-events:none}
 
 /* ---------- toast + sound ---------- */
 .toast{
@@ -462,7 +423,7 @@ body.daylight .sound{background:rgba(255,255,255,.75);color:var(--plum);border-c
 @media (max-width:420px){ .gate-card{padding:30px 22px 24px} .bubble{font-size:.96rem} }
 
 @media (prefers-reduced-motion:reduce){
-  .roses .sway,.node.next,.tl-item.in .tl-float,.petal,.blob,.character.out img,.btn-complete.ready{animation:none!important}
+  .roses .sway,.node.next,.tl-item.in .tl-float,.blob,.character.out img,.bubble.waiting .bubble-next{animation:none!important}
   .gate-card{animation-duration:.01s}
   .tl-card{transform:none}
 }
@@ -488,11 +449,9 @@ body.daylight .sound{background:rgba(255,255,255,.75);color:var(--plum);border-c
 <div class="roses roses-right" id="rosesRight" aria-hidden="true"></div>
 
 <main>
-  <section class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+  <section class="gate" id="gate" role="dialog" aria-modal="true" aria-labelledby="gateQuestion">
     <form class="gate-card" id="gateCard" novalidate autocomplete="off">
       <svg class="gate-crest" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.5 3.2A9.5 9.5 0 1 0 20.8 17A7.6 7.6 0 0 1 16.5 3.2Z"/></svg>
-      <h1 id="gateTitle"></h1>
-      <p class="gate-sub" id="gateSub"></p>
       <label class="gate-q" for="answer" id="gateQuestion"></label>
       <input id="answer" name="answer" type="text" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" aria-describedby="gateMsg">
       <p class="gate-msg" id="gateMsg" aria-live="polite"></p>
@@ -502,52 +461,41 @@ body.daylight .sound{background:rgba(255,255,255,.75);color:var(--plum);border-c
 
   <nav class="levels" id="levels" aria-label="Levels" hidden></nav>
 
-  <section class="panel" id="panelList" aria-labelledby="listTitle" hidden>
+  <section class="panel" id="panelList" aria-label="A List" hidden>
     <div class="panel-head">
-      <h2 id="listTitle"></h2>
-      <p id="listIntro"></p>
       <button class="icon-btn" type="button" id="panelClose" aria-label="Close the list">
         <svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg>
       </button>
     </div>
-    <ul class="list" id="list"></ul>
+    <ul class="list" id="list" tabindex="0" aria-label="A List"></ul>
     <div class="panel-foot">
-      <span class="progress" id="listProgress" aria-live="polite"></span>
-      <button class="btn-complete" type="button" id="completeBtn" disabled>Complete Stage 1</button>
+      <button class="btn-complete" type="button" id="completeBtn" lang="ne"></button>
     </div>
   </section>
 
-  <div class="bubble" id="bubble" hidden aria-live="polite"><span class="ghost" id="bubbleGhost" aria-hidden="true"></span><span class="typed" id="bubbleTyped"></span></div>
+  <div class="bubble" id="bubble" hidden aria-live="polite"><span class="ghost" id="bubbleGhost" aria-hidden="true"></span><span class="typed" id="bubbleTyped"></span><span class="bubble-next" aria-hidden="true"><svg viewBox="0 0 16 16"><path d="M4 6l4 4 4-4"/></svg></span></div>
 
-  <section class="timeline" id="timeline" role="dialog" aria-modal="true" aria-labelledby="tlTitle" hidden>
+  <section class="timeline" id="timeline" role="dialog" aria-modal="true" aria-label="A Timeline" hidden>
     <button class="tl-back" type="button" id="tlBack">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Back to the moon
     </button>
     <div class="tl-scroll" id="tlScroll">
-      <header class="tl-head">
-        <h2 id="tlTitle"></h2>
-        <p id="tlIntro"></p>
-      </header>
       <div class="tl-track" id="tlTrack">
         <div class="tl-line" aria-hidden="true"><span class="tl-comet" id="tlComet"></span></div>
       </div>
       <footer class="tl-foot">
-        <p id="tlOutro"></p>
-        <button class="btn-primary" type="button" id="proceedBtn">Proceed to Final Stage</button>
+        <button class="btn-primary" type="button" id="proceedBtn" lang="ne"></button>
       </footer>
     </div>
   </section>
 
   <section class="reveal" id="reveal" tabindex="-1" aria-labelledby="revealTitle" hidden>
     <div class="wash" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="blob b4"></i></div>
-    <div class="petals" id="petals" aria-hidden="true"></div>
     <div class="reveal-inner">
       <h2 class="reveal-title" id="revealTitle"></h2>
       <figure class="frame"><img id="portrait" alt=""></figure>
-      <p class="reveal-msg" id="revealMsg"></p>
-      <p class="reveal-sign" id="revealSign"></p>
       <button class="btn-soft" type="button" id="lapseBtn">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>Watch Process Time-Lapse
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg><span id="lapseLabel" lang="ne"></span>
       </button>
     </div>
   </section>
@@ -562,23 +510,11 @@ body.daylight .sound{background:rgba(255,255,255,.75);color:var(--plum);border-c
     </div>
   </div>
 
-  <div class="lapse" id="lapse" role="dialog" aria-modal="true" aria-labelledby="lapseTitle" hidden>
-    <div class="lapse-card">
-      <a class="lapse-thumb" id="lapseThumb" target="_blank" rel="noopener" aria-label="Open the time-lapse video">
-        <span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12.5-7.5z"/></svg></span>
-      </a>
-      <button class="icon-btn" type="button" id="lapseClose" aria-label="Close">
-        <svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg>
-      </button>
-      <h3 id="lapseTitle"></h3>
-      <p id="lapseText"></p>
-      <div class="lapse-actions">
-        <a class="btn-ink" id="lapseOpen" target="_blank" rel="noopener">Open the video</a>
-        <button class="btn-soft" type="button" id="lapseCopy">Copy link</button>
-        <span class="lapse-status" id="lapseStatus" aria-live="polite"></span>
-      </div>
-      <p class="lapse-url" id="lapseUrl"></p>
-    </div>
+  <div class="lapse" id="lapse" role="dialog" aria-modal="true" aria-label="Time-lapse video" hidden>
+    <button class="icon-btn lapse-close" type="button" id="lapseClose" aria-label="Close the video">
+      <svg viewBox="0 0 16 16"><path d="M3 3l10 10M13 3L3 13"/></svg>
+    </button>
+    <div class="lapse-frame" id="lapseFrame"></div>
   </div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -591,23 +527,20 @@ body.daylight .sound{background:rgba(255,255,255,.75);color:var(--plum);border-c
 /* =====================================================================
    CUSTOMISE YOUR STORYBOOK
    Everything you'll want to change lives in this block.
-   Keep music.mp3, character.png and portrait.jpg in the same folder
-   as this index.html file.
+   Keep music.mp3 and portrait.jpg in the same folder as this index.html.
    ===================================================================== */
 
 const PAGE_TITLE      = "A storybook for you";
 
 // Files (paths are relative to index.html)
 const MUSIC_FILE      = "music.mp3";
-const CHARACTER_FILE  = "character.png";
+const CHARACTER_FILE  = "";               // "" uses the built-in chibi. Later: "character.png"
 const PORTRAIT_FILE   = "portrait.jpg";   // portrait.png works too: the page tries both
-const PORTRAIT_ALT    = "A digital portrait, painted for you";
+const PORTRAIT_ALT    = "A digital portrait";
 const MUSIC_VOLUME    = 0.6;              // 0 to 1
 const MOON_BRIGHTNESS = 0.8;              // 0.5 (dim) to 1 (full photo brightness)
 
 // Stage 0: the gate
-const LOGIN_TITLE       = "A storybook, kept under the moon";
-const LOGIN_SUBTITLE    = "Answer one question to open it.";
 const LOGIN_QUESTION    = "How many wives did JBR have?";
 const LOGIN_PLACEHOLDER = "Type your answer";
 const CORRECT_ANSWERS   = ["42", "forty two"];  // not case-sensitive; add more if you like
@@ -615,25 +548,27 @@ const WRONG_ANSWER_MSG  = "Not quite. Try again.";
 const LOGIN_HINT        = "Hint: it’s a number.";        // shown after two misses
 const EMPTY_ANSWER_MSG  = "Type an answer first.";
 
-// What the character says (one bubble per line)
+// What the character says. Each line waits for a tap before the next one.
 const GREETING_LINES = [
-  "Oh! You found the storybook.",
-  "I’ve been keeping it safe up here, behind the moon.",
-  "Three little chapters are waiting. Start with the first one."
+  "Wouldn't it be hilarious if I made all this and you clicked off right here?",
+  "My inescapable habit of making everything into a joke(even when I should not) aside, this is my gift for you.",
+  "See, like you, I also don't like my birthday. But I go a step beyond. I do not like any birthdays. I dislike the concept of celebrating birthdays. If I wish people a happy birthday, it means that person is not my friend.",
+  "But I do get the rationale behind celebrating the fact that people you care for were ever born. So, for my people, I wish them too.",
+  "Just not on their birthday. But on a random day out of nowhere.",
+  "With all that said,",
+  "Happy birth, dictator."
 ];
 const FINAL_LINES = [
-  "You made it to the last page.",
-  "There’s one more thing, and it took a long time to make.",
-  "Close your eyes for me. No peeking!"
+  "Shakespeare said “to be or not to be”",
+  "But he also wrote the story of gatsby throwing parties so his daisy would notice him",
+  "This is just nonsense I am saying to make it sound profound",
+  "Anyways, this is my party"
 ];
 
-const LEVEL_NAMES = ["Little things", "Our story", "The gift"];
+const LEVEL_NAMES = ["A List", "A Timeline", "A Gift"];
 
-// Stage 1: the list
-// A plain line lights up when tapped. Every item has to be lit to finish.
-// (You can also write { title: "...", text: "..." } to make an item open and show a note.)
-const LIST_TITLE = "Little things I love about you";
-const LIST_INTRO = "Tap each one to light it up.";
+// Stage 1: the list (one item per row)
+const LIST_CONTINUE = "कंटिन्यु";
 const LIST_ITEMS = [
   "Superstore",
   "Pashupatinath ma doctor",
@@ -684,8 +619,7 @@ const LIST_ITEMS = [
 ];
 
 // Stage 2: the timeline
-const TIMELINE_TITLE = "Our story, so far";
-const TIMELINE_INTRO = "Scroll slowly. Every date here meant something.";
+const TIMELINE_CONTINUE = "निरन्तरता दिइस्योस";
 // Leave date as "" for entries without a date. A title is optional too.
 const TIMELINE = [
   { date: "February",     text: "We talked for the first time." },
@@ -717,17 +651,14 @@ const TIMELINE = [
   { date: "August 29",    text: "You deactivated your account." },
   { date: "September 24", text: "We talked outside class. We still had crescent moon." }
 ];
-const TIMELINE_OUTRO = "And there are so many pages still to write.";
 
 // Stage 3: the reveal
-const COUNTDOWN_TEXT   = "Please close your eyes for 3 seconds...";
-const OPEN_EYES_TEXT   = "Now, open your eyes.";
-const REVEAL_TITLE     = "For you";
-const REVEAL_MESSAGE   = "I painted this for you, one brushstroke at a time.";
-const REVEAL_SIGNATURE = "With all my love";
-const TIMELAPSE_URL    = "https://youtu.be/your-unlisted-video-id";
-const TIMELAPSE_TITLE  = "How it was made";
-const TIMELAPSE_TEXT   = "Every layer, from the first sketch to the last highlight, sped up into a few minutes.";
+const COUNTDOWN_TEXT     = "Please close your eyes for 3 seconds...";
+const OPEN_EYES_TEXT     = "Now, open your eyes.";
+const REVEAL_TITLE       = "For you";
+const TIMELAPSE_BUTTON   = "उल्लिखित चित्रको समयाबितन (Timelapse)";
+const TIMELAPSE_URL      = "https://youtu.be/your-unlisted-video-id";  // YouTube, Google Drive, Vimeo or an .mp4 file
+const TIMELAPSE_VERTICAL = false;   // true if the video is upright (filmed like a phone video)
 
 /* ===================================================================== */
 /* You shouldn't need to edit anything below this line.                  */
@@ -758,12 +689,88 @@ function mulberry32(a) {
 }
 
 const GLINT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5c.7 6.6 3.9 9.8 10.5 10.5-6.6.7-9.8 3.9-10.5 10.5C11.3 15.9 8.1 12.7 1.5 12 8.1 11.3 11.3 8.1 12 1.5Z"/></svg>';
-const LOCK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 const SOUND_ON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/></svg>';
 const SOUND_OFF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M16 9.5l5 5M21 9.5l-5 5"/></svg>';
 
-const CHARACTER_PLACEHOLDER = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><defs><radialGradient id="g" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFF8EC"/><stop offset="1" stop-color="#E6D7BD"/></radialGradient></defs><path d="M100 44V18" stroke="#E6D7BD" stroke-width="4" stroke-linecap="round"/><path d="M100 4c.4 5 2.6 7.2 7.6 7.6-5 .4-7.2 2.6-7.6 7.6-.4-5-2.6-7.2-7.6-7.6 5-.4 7.2-2.6 7.6-7.6z" fill="#F8E8C2"/><ellipse cx="42" cy="132" rx="15" ry="11" fill="#E6D7BD" transform="rotate(-30 42 132)"/><ellipse cx="158" cy="120" rx="15" ry="11" fill="#E6D7BD" transform="rotate(35 158 120)"/><ellipse cx="100" cy="116" rx="70" ry="66" fill="url(#g)"/><ellipse cx="77" cy="110" rx="7" ry="9" fill="#2B2540"/><ellipse cx="123" cy="110" rx="7" ry="9" fill="#2B2540"/><circle cx="79.5" cy="106.5" r="2.4" fill="#fff"/><circle cx="125.5" cy="106.5" r="2.4" fill="#fff"/><ellipse cx="62" cy="130" rx="11" ry="6.5" fill="#F6B8C6" opacity=".8"/><ellipse cx="138" cy="130" rx="11" ry="6.5" fill="#F6B8C6" opacity=".8"/><path d="M90 126q10 10 20 0" fill="none" stroke="#2B2540" stroke-width="4" stroke-linecap="round"/></svg>`);
+const CHIBI = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="400" height="440" viewBox="0 0 400 440">
+<defs>
+  <filter id="stk" x="-10%" y="-10%" width="120%" height="120%">
+    <feMorphology in="SourceAlpha" operator="dilate" radius="7" result="d"/>
+    <feFlood flood-color="#F4F0E6"/>
+    <feComposite in2="d" operator="in" result="o"/>
+    <feMerge><feMergeNode in="o"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="iris" cx="50%" cy="30%" r="75%">
+    <stop offset="0" stop-color="#2A1712"/><stop offset=".55" stop-color="#5B3524"/><stop offset="1" stop-color="#A9714A"/>
+  </radialGradient>
+  <linearGradient id="skin" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0" stop-color="#F8E2CF"/><stop offset="1" stop-color="#F0CDB4"/>
+  </linearGradient>
+  <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2B3247"/><stop offset="1" stop-color="#191D2A"/>
+  </linearGradient>
+  <clipPath id="faceClip"><path d="M98 150C92 108 140 92 200 90C262 88 304 108 306 150C310 196 300 238 270 266C254 280 240 288 222 290C196 294 170 288 150 276C110 252 92 206 98 150Z"/></clipPath>
+  <path id="fringe" d="M90 178C82 118 112 56 182 42C214 34 248 36 276 48C306 60 330 86 338 122C342 152 338 178 326 200C322 188 316 178 308 172C312 184 310 194 304 200C300 186 292 174 280 166C282 178 279 186 272 192C266 178 254 166 240 160C240 170 235 177 228 182C220 166 204 154 184 148C162 142 138 144 122 152C110 160 99 168 90 178Z"/>
+</defs>
+<g filter="url(#stk)">
+  <!-- back hair -->
+  <path d="M58 238C36 192 34 130 70 88C82 60 108 40 138 34C160 18 196 12 224 20C252 16 288 28 308 48C334 62 358 102 354 152C356 186 346 212 330 228C326 214 322 204 318 196L120 150C110 180 106 210 112 244C96 258 72 256 58 238Z" fill="#141819"/>
+  <path d="M62 196C46 236 54 282 86 300C96 306 108 300 112 290C104 276 104 262 106 244Z" fill="#141819"/>
+  <path d="M80 290C68 298 68 314 82 318C78 310 80 302 90 296Z" fill="#141819"/>
+  <path d="M74 132C62 160 60 196 68 226C72 196 78 170 90 146Z" fill="#5C6A67" opacity=".55"/>
+  <!-- body -->
+  <path d="M94 440C96 378 126 332 176 312L224 312C276 330 306 376 308 440Z" fill="url(#suit)" stroke="#0E1018" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M118 372C134 346 156 328 178 318C162 336 146 354 134 380Z" fill="#3B4560" opacity=".55"/>
+  <path d="M174 310L226 310L214 398L200 420L186 398Z" fill="#EEE7D4"/>
+  <path d="M174 310L199 332L183 350Z" fill="#F8F3E6" stroke="#CFC6AE" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M226 310L201 332L217 350Z" fill="#F8F3E6" stroke="#CFC6AE" stroke-width="1.5" stroke-linejoin="round"/>
+  <circle cx="200" cy="352" r="3.4" fill="#15151C"/><circle cx="200" cy="374" r="3.4" fill="#15151C"/><circle cx="200" cy="396" r="3.4" fill="#15151C"/>
+  <path d="M174 312L146 338L168 352L156 364L194 422L184 350Z" fill="#1A1F2E" stroke="#0E1018" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M226 312L254 338L232 352L244 364L206 422L216 350Z" fill="#1A1F2E" stroke="#0E1018" stroke-width="2" stroke-linejoin="round"/>
+  <!-- neck -->
+  <path d="M178 270L222 270L220 314C206 320 194 320 180 314Z" fill="#E9BFA6"/>
+  <!-- ear -->
+  <path d="M104 178C84 168 68 190 74 212C80 232 98 238 108 228Z" fill="#F1CDB6" stroke="#3A2A28" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M96 190C86 194 86 210 96 218" fill="none" stroke="#C99A85" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- face -->
+  <path d="M98 150C92 108 140 92 200 90C262 88 304 108 306 150C310 196 300 238 270 266C254 280 240 288 222 290C196 294 170 288 150 276C110 252 92 206 98 150Z" fill="url(#skin)" stroke="#3A2A28" stroke-width="3" stroke-linejoin="round"/>
+  <use href="#fringe" transform="translate(4 12)" fill="#E2B49C" opacity=".6" clip-path="url(#faceClip)"/>
+  <!-- brows -->
+  <path d="M138 183C152 177 168 176 184 180" fill="none" stroke="#141819" stroke-width="7" stroke-linecap="round"/>
+  <path d="M240 180C252 176 264 176 276 179" fill="none" stroke="#141819" stroke-width="6" stroke-linecap="round"/>
+  <!-- eyes -->
+  <g>
+    <ellipse cx="164" cy="214" rx="24" ry="28" fill="#fff"/>
+    <ellipse cx="167" cy="216" rx="20" ry="25" fill="url(#iris)"/>
+    <ellipse cx="168" cy="219" rx="8" ry="10.5" fill="#1A0E0B"/>
+    <ellipse cx="159" cy="205" rx="7.5" ry="8.5" fill="#fff"/>
+    <circle cx="175" cy="229" r="3.4" fill="#fff" opacity=".9"/>
+    <path d="M138 206C144 188 160 182 176 184C184 186 190 190 193 198" fill="none" stroke="#1A1214" stroke-width="5.5" stroke-linecap="round"/>
+    <path d="M190 194L197 189" stroke="#1A1214" stroke-width="4" stroke-linecap="round"/>
+  </g>
+  <g>
+    <ellipse cx="258" cy="210" rx="19" ry="26" fill="#fff"/>
+    <ellipse cx="261" cy="212" rx="16" ry="23" fill="url(#iris)"/>
+    <ellipse cx="262" cy="215" rx="6.5" ry="9.5" fill="#1A0E0B"/>
+    <ellipse cx="254" cy="202" rx="6" ry="7.5" fill="#fff"/>
+    <circle cx="267" cy="224" r="3" fill="#fff" opacity=".9"/>
+    <path d="M238 202C243 186 256 180 268 182C275 184 280 188 282 195" fill="none" stroke="#1A1214" stroke-width="5" stroke-linecap="round"/>
+    <path d="M280 191L287 187" stroke="#1A1214" stroke-width="3.5" stroke-linecap="round"/>
+  </g>
+  <!-- cheeks, nose, mustache, mouth -->
+  <ellipse cx="146" cy="250" rx="17" ry="8" fill="#F2A3A0" opacity=".38"/>
+  <ellipse cx="282" cy="244" rx="12" ry="7" fill="#F2A3A0" opacity=".38"/>
+  <path d="M240 240Q245 244 241 247" fill="none" stroke="#C48E78" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M222 253.5C229 249.5 235 249.5 240 252C245 249.5 251 249.5 259 253.5C251 254.8 245 255.2 240 254.6C235 255.2 229 254.8 222 253.5Z" fill="#241B1A"/>
+  <path d="M231 267Q242 274 254 265" fill="none" stroke="#5A3530" stroke-width="2.8" stroke-linecap="round"/>
+  <!-- front hair -->
+  <use href="#fringe" fill="#1A1E20" stroke="#0B0D0E" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M122 92C156 58 220 44 276 60C238 60 194 70 162 88C150 96 136 104 128 112Z" fill="#6B7A76" opacity=".85"/>
+  <path d="M176 120C206 104 240 100 268 106C244 110 220 118 200 132Z" fill="#6B7A76" opacity=".45"/>
+  <path d="M286 80C310 94 326 114 332 140C318 122 302 108 284 98Z" fill="#6B7A76" opacity=".55"/>
+  <path d="M160 68C198 84 222 112 232 152M222 56C260 72 284 104 292 146M118 112C142 94 174 86 204 88" fill="none" stroke="#3E4846" stroke-width="2.5" stroke-linecap="round"/>
+</g>
+</svg>`);
 
 function portraitPlaceholder() {
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
@@ -773,7 +780,7 @@ function portraitPlaceholder() {
 /* ---------------- elements + state ---------------- */
 const moonEl = $('#moon'), charEl = $('#character'), charImg = $('#characterImg');
 const gate = $('#gate'), gateCard = $('#gateCard'), input = $('#answer'), gateMsg = $('#gateMsg'), gateSubmit = $('#gateSubmit');
-const levelsEl = $('#levels'), panel = $('#panelList'), list = $('#list'), completeBtn = $('#completeBtn'), progressEl = $('#listProgress');
+const levelsEl = $('#levels'), panel = $('#panelList'), list = $('#list'), completeBtn = $('#completeBtn');
 const bubble = $('#bubble'), bubbleGhost = $('#bubbleGhost'), bubbleTyped = $('#bubbleTyped');
 const tl = $('#timeline'), tlScroll = $('#tlScroll'), tlTrack = $('#tlTrack'), tlComet = $('#tlComet');
 const reveal = $('#reveal'), portraitImg = $('#portrait');
@@ -1182,9 +1189,11 @@ function normalise(s) {
     .replace(/[^\p{L}\p{N}\p{M}]+/gu, ' ').trim();
 }
 
+let fadeId = 0;
 function fadeVolume(to, ms, done) {
-  const from = audio.volume, t0 = performance.now();
+  const id = ++fadeId, from = audio.volume, t0 = performance.now();
   (function step(t) {
+    if (id !== fadeId) return;
     const p = clamp((t - t0) / ms, 0, 1);
     try { audio.volume = clamp(lerp(from, to, p), 0, 1); } catch (e) {}
     if (p < 1) requestAnimationFrame(step); else if (done) done();
@@ -1319,27 +1328,44 @@ async function openStorybook() {
    ===================================================================== */
 function positionBubble() {
   const g = charGeom(true), L = state.L;
-  let left = g.x + g.s * (L.portrait ? .3 : .36), maxW = Math.min(340, W - left - 14);
+  bubble.classList.remove('side');
+  const sideLeft = g.x + g.s * .55, sideW = Math.min(420, W - sideLeft - 14);
+  if (!L.portrait && sideW >= 240) {
+    // landscape: sit beside the character, vertically centred on it
+    bubble.classList.add('side');
+    bubble.style.left = sideLeft + 'px'; bubble.style.maxWidth = sideW + 'px'; bubble.style.top = '0px';
+    const h = bubble.offsetHeight;
+    bubble.style.top = clamp(g.y - h * .45, 12, H - h - 12) + 'px';
+    return;
+  }
+  let left = g.x + g.s * (L.portrait ? .3 : .36), maxW = Math.min(360, W - left - 14);
   if (maxW < 210) { left = Math.max(14, W - 14 - 210); maxW = W - left - 14; }
   bubble.style.left = left + 'px'; bubble.style.maxWidth = maxW + 'px'; bubble.style.top = '0px';
   const h = bubble.offsetHeight;
   bubble.style.top = Math.max(12, g.y - g.s * .28 - h) + 'px';
 }
 
+// Each line types out, then waits. A tap anywhere finishes the line instantly,
+// and the next tap moves on to the following line.
 function speak(text) {
   return new Promise(resolve => {
-    const chars = [...text]; let i = 0, typing = true, timer = 0, hold = 0;
-    bubble.hidden = false; bubbleGhost.textContent = text; bubbleTyped.textContent = '';
+    const chars = [...text]; let i = 0, typing = true, timer = 0;
+    bubble.hidden = false; bubble.classList.remove('waiting');
+    bubbleGhost.textContent = text; bubbleTyped.textContent = '';
     positionBubble();
     requestAnimationFrame(() => bubble.classList.add('show'));
-    const done = () => { clearTimeout(hold); clearInterval(timer); bubble.removeEventListener('pointerdown', onTap); state.tap = null; resolve(); };
-    const finish = () => { typing = false; clearInterval(timer); bubbleTyped.textContent = text; hold = setTimeout(done, 1500 + chars.length * 38); };
-    const onTap = (e) => { if (e) e.preventDefault(); typing ? finish() : done(); };
-    bubble.addEventListener('pointerdown', onTap); state.tap = onTap;
+    const finish = () => { typing = false; clearInterval(timer); bubbleTyped.textContent = text; bubble.classList.add('waiting'); };
+    const done = () => { clearInterval(timer); state.tap = null; bubble.classList.remove('waiting'); resolve(); };
+    state.tap = () => { typing ? finish() : done(); };
     if (reduceMotion) finish();
     else timer = setInterval(() => { i++; bubbleTyped.textContent = chars.slice(0, i).join(''); if (i >= chars.length) finish(); }, 30);
   });
 }
+document.addEventListener('pointerdown', (e) => {
+  if (!state.tap || e.button > 0) return;
+  if (e.target && e.target.closest && e.target.closest('.sound')) return;
+  state.tap();
+}, true);
 
 async function characterSay(lines) {
   state.talking = true;
@@ -1363,7 +1389,7 @@ function buildLevels() {
   LEVEL_NAMES.slice(0, 3).forEach((name, i) => {
     const b = document.createElement('button');
     b.type = 'button'; b.className = 'node locked'; b.style.setProperty('--i', i);
-    b.innerHTML = `<span class="node-num">${['I', 'II', 'III'][i]}</span><span class="node-label">${esc(name)}</span><span class="lock">${LOCK}</span><span class="done-mark">${GLINT}</span>`;
+    b.innerHTML = `<span class="node-num">${['I', 'II', 'III'][i]}</span><span class="node-label">${esc(name)}</span><span class="fog" aria-hidden="true"></span><span class="done-mark">${GLINT}</span>`;
     b.addEventListener('click', () => onNode(i + 1));
     levelsEl.appendChild(b); nodes.push(b);
   });
@@ -1379,7 +1405,6 @@ function refreshNodes() {
 function unlock(lv) {
   state.unlocked = Math.max(state.unlocked, lv); refreshNodes();
   const n = nodes[lv - 1]; n.classList.add('unlocking'); setTimeout(() => n.classList.remove('unlocking'), 1100);
-  toast(`Level ${lv} unlocked: ${LEVEL_NAMES[lv - 1]}`);
 }
 function onNode(lv) {
   if (state.busy || state.talking) return;
@@ -1401,56 +1426,28 @@ function toast(msg) {
 }
 
 /* ---------------- level 1: list ---------------- */
-const ITEMS = LIST_ITEMS.map(it => typeof it === 'string' ? { title: it } : it);
-function markRead(i, li) {
-  if (state.read.has(i)) return;
-  state.read.add(i); li.classList.add('read', 'pop');
-  setTimeout(() => li.classList.remove('pop'), 700);
-  updateProgress();
-}
 function buildList() {
-  $('#listTitle').textContent = LIST_TITLE; $('#listIntro').textContent = LIST_INTRO;
-  const chips = ITEMS.every(it => !it.text);
-  list.classList.toggle('list--chips', chips);
-  ITEMS.forEach((it, i) => {
-    const li = document.createElement('li'); li.className = 'item';
-    if (!it.text) {
-      li.innerHTML = `<button type="button" class="item-btn${chips ? ' chip' : ''}" aria-pressed="false"><span class="item-glint">${GLINT}</span><span class="item-title">${esc(it.title)}</span></button>`;
-      const btn = li.querySelector('button');
-      btn.addEventListener('click', () => { btn.setAttribute('aria-pressed', 'true'); markRead(i, li); });
-    } else {
-      li.innerHTML = `<button type="button" class="item-btn" aria-expanded="false" aria-controls="item-${i}"><span class="item-glint">${GLINT}</span><span class="item-title">${esc(it.title)}</span></button><div class="item-body" id="item-${i}" role="region"><div><p>${esc(it.text)}</p></div></div>`;
-      const btn = li.querySelector('button');
-      btn.addEventListener('click', () => {
-        const open = !li.classList.contains('open');
-        li.classList.toggle('open', open); btn.setAttribute('aria-expanded', String(open));
-        if (open) markRead(i, li);
-      });
-    }
+  LIST_ITEMS.forEach(it => {
+    const item = typeof it === 'string' ? { title: it } : it;
+    const li = document.createElement('li'); li.className = 'row';
+    li.innerHTML = `<span class="row-title">${esc(item.title)}</span>${item.text ? `<span class="row-text">${esc(item.text)}</span>` : ''}`;
     list.appendChild(li);
   });
-  updateProgress();
-}
-function updateProgress() {
-  const n = state.read.size, N = ITEMS.length, done = state.done.has(1);
-  progressEl.textContent = done ? `All ${N} lit` : `${n} of ${N}`;
-  completeBtn.disabled = n < N || done;
-  completeBtn.classList.toggle('ready', n >= N && !done);
+  completeBtn.textContent = LIST_CONTINUE;
 }
 completeBtn.addEventListener('click', () => {
-  if (state.done.has(1) || state.read.size < ITEMS.length) return;
+  const first = !state.done.has(1);
   state.done.add(1);
-  completeBtn.classList.remove('ready'); completeBtn.classList.add('done'); completeBtn.textContent = 'Stage 1 complete';
-  updateProgress();
-  unlock(2);
-  setTimeout(() => closePanel(), 1100);
+  closePanel();
+  if (first) setTimeout(() => unlock(2), 350); else refreshNodes();
 });
 function openPanel() {
   state.panelOpen = true; panel.hidden = false;
   levelsEl.classList.add('panel-open'); if (state.L.portrait) levelsEl.classList.add('dim');
   nodes[0].classList.add('active');
   requestAnimationFrame(() => panel.classList.add('open'));
-  setTimeout(() => { const f = list.querySelector('button'); if (f) f.focus({ preventScroll: true }); }, 250);
+  list.scrollTop = 0;
+  setTimeout(() => list.focus({ preventScroll: true }), 250);
 }
 function closePanel(instant) {
   if (!state.panelOpen) return;
@@ -1464,7 +1461,7 @@ $('#panelClose').addEventListener('click', () => closePanel());
 /* ---------------- level 2: timeline ---------------- */
 let io = null, tlItems = [];
 function buildTimeline() {
-  $('#tlTitle').textContent = TIMELINE_TITLE; $('#tlIntro').textContent = TIMELINE_INTRO; $('#tlOutro').textContent = TIMELINE_OUTRO;
+  $('#proceedBtn').textContent = TIMELINE_CONTINUE;
   TIMELINE.forEach((mItem, i) => {
     const a = document.createElement('article'); a.className = 'tl-item';
     a.style.setProperty('--fd', (-(i % 3) * 2.2) + 's');
@@ -1555,15 +1552,6 @@ function wipeNight() {
 }
 
 function showReveal() {
-  const petals = $('#petals');
-  if (!reduceMotion) {
-    const cols = ['#F6D3DB', '#DCD2F3', '#CDEADF', '#F8E8C2', '#D4E4F8', '#F3C4CF'];
-    for (let i = 0; i < 12; i++) {
-      const p = document.createElement('i'); p.className = 'petal';
-      p.style.cssText = `--x:${(Math.random() * 100).toFixed(1)}vw;--d:${(14 + Math.random() * 10).toFixed(1)}s;--dl:${(-Math.random() * 16).toFixed(1)}s;--dx:${((Math.random() - .5) * 30).toFixed(1)}vw;--r:${Math.round(180 + Math.random() * 540)}deg;background:${cols[i % cols.length]};transform:scale(${(.7 + Math.random() * .6).toFixed(2)})`;
-      petals.appendChild(p);
-    }
-  }
   reveal.hidden = false;
   requestAnimationFrame(() => requestAnimationFrame(() => reveal.classList.add('bloom')));
   setTimeout(() => reveal.focus({ preventScroll: true }), 1600);
@@ -1584,28 +1572,47 @@ function loadPortrait() {
   portraitImg.src = tries[0];
 }
 
-/* ---------------- time-lapse modal ---------------- */
+/* ---------------- time-lapse video popup ---------------- */
+function videoEmbed(url) {
+  try {
+    const u = new URL(url, location.href), host = u.hostname.replace(/^(www|m)\./, '');
+    let id = '';
+    if (host === 'youtu.be') id = u.pathname.slice(1).split('/')[0];
+    else if (host === 'youtube.com' || host === 'youtube-nocookie.com') {
+      if (u.pathname === '/watch') id = u.searchParams.get('v') || '';
+      else { const m = u.pathname.match(/^\/(shorts|embed|live)\/([^/?#]+)/); if (m) id = m[2]; }
+    }
+    if (id) return { type: 'iframe', tall: /^\/shorts\//.test(u.pathname), src: `https://www.youtube.com/embed/${encodeURIComponent(id)}?autoplay=1&rel=0&playsinline=1` };
+    if (host === 'drive.google.com') { const m = u.pathname.match(/\/file\/d\/([^/]+)/); if (m) return { type: 'iframe', src: `https://drive.google.com/file/d/${m[1]}/preview` }; }
+    if (host === 'vimeo.com') { const m = u.pathname.match(/\/(\d+)/); if (m) return { type: 'iframe', src: `https://player.vimeo.com/video/${m[1]}?autoplay=1` }; }
+    if (/\.(mp4|webm|mov|m4v)$/i.test(u.pathname)) return { type: 'video', src: url };
+  } catch (e) {}
+  return { type: 'link', src: url };
+}
+let musicWasOn = false;
 function openLapse() {
+  const v = videoEmbed(TIMELAPSE_URL);
+  if (v.type === 'link') { window.open(v.src, '_blank', 'noopener'); return; }
+  const frame = $('#lapseFrame');
+  frame.classList.toggle('tall', TIMELAPSE_VERTICAL || !!v.tall);
+  frame.innerHTML = v.type === 'iframe'
+    ? `<iframe src="${esc(v.src)}" title="Time-lapse video" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`
+    : `<video src="${esc(v.src)}" controls autoplay playsinline></video>`;
+  musicWasOn = !audio.paused;
+  if (musicWasOn) fadeVolume(0, 500, () => audio.pause());
+  document.body.classList.add('lapse-open');
   lapse.hidden = false; requestAnimationFrame(() => lapse.classList.add('open'));
-  setTimeout(() => $('#lapseOpen').focus({ preventScroll: true }), 60);
+  setTimeout(() => $('#lapseClose').focus({ preventScroll: true }), 60);
 }
 function closeLapse() {
-  lapse.classList.remove('open'); setTimeout(() => { lapse.hidden = true; }, 320);
+  lapse.classList.remove('open'); document.body.classList.remove('lapse-open');
+  setTimeout(() => { lapse.hidden = true; $('#lapseFrame').innerHTML = ''; }, 320);
+  if (musicWasOn) { musicWasOn = false; audio.play().then(() => fadeVolume(MUSIC_VOLUME, 1200)).catch(() => {}); }
   $('#lapseBtn').focus({ preventScroll: true });
 }
 $('#lapseBtn').addEventListener('click', openLapse);
 $('#lapseClose').addEventListener('click', closeLapse);
 lapse.addEventListener('click', (e) => { if (e.target === lapse) closeLapse(); });
-$('#lapseCopy').addEventListener('click', () => {
-  const status = $('#lapseStatus');
-  const fallback = () => {
-    const r = document.createRange(); r.selectNodeContents($('#lapseUrl'));
-    const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
-    status.textContent = 'Link selected. Copy it from here.';
-  };
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(TIMELAPSE_URL).then(() => { status.textContent = 'Link copied'; }).catch(fallback);
-  else fallback();
-});
 
 /* ---------------- global keys + resize ---------------- */
 document.addEventListener('keydown', (e) => {
@@ -1633,22 +1640,15 @@ function onResize() {
 /* ---------------- init ---------------- */
 function init() {
   document.title = PAGE_TITLE;
-  $('#gateTitle').textContent = LOGIN_TITLE;
-  $('#gateSub').textContent = LOGIN_SUBTITLE;
   $('#gateQuestion').textContent = LOGIN_QUESTION;
   input.placeholder = LOGIN_PLACEHOLDER;
   $('#revealTitle').textContent = REVEAL_TITLE;
-  $('#revealMsg').textContent = REVEAL_MESSAGE;
-  $('#revealSign').textContent = REVEAL_SIGNATURE;
-  $('#lapseTitle').textContent = TIMELAPSE_TITLE;
-  $('#lapseText').textContent = TIMELAPSE_TEXT;
-  $('#lapseUrl').textContent = TIMELAPSE_URL;
-  $('#lapseOpen').href = TIMELAPSE_URL; $('#lapseThumb').href = TIMELAPSE_URL;
+  $('#lapseLabel').textContent = TIMELAPSE_BUTTON;
 
   audio.src = MUSIC_FILE;
   audio.addEventListener('error', () => { soundBtn.hidden = true; });
-  charImg.onerror = () => { charImg.onerror = null; charImg.src = CHARACTER_PLACEHOLDER; };
-  charImg.src = CHARACTER_FILE;
+  if (CHARACTER_FILE) { charImg.onerror = () => { charImg.onerror = null; charImg.src = CHIBI; }; charImg.src = CHARACTER_FILE; }
+  else charImg.src = CHIBI;
 
   buildLevels(); buildList(); buildTimeline();
   buildRoses($('#rosesLeft'), 'rl', 11, false);
