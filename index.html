@@ -382,6 +382,12 @@ body.lapse-open .sound{opacity:0;pointer-events:none}
   box-shadow:0 14px 34px -14px rgba(0,0,0,.7);transition:opacity .35s ease,transform .35s ease;
 }
 .toast.show{opacity:1;transform:translate(-50%,0)}
+/* ---------- black opening screen ---------- */
+.intro{position:fixed;inset:0;z-index:60;background:#000;cursor:pointer;transition:opacity 1.4s ease;-webkit-tap-highlight-color:transparent}
+.intro:focus{outline:none}
+.intro.gone{opacity:0;pointer-events:none}
+body.intro-on .gate-card{animation-play-state:paused}
+
 .sound{
   appearance:none;position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:14px;z-index:50;width:42px;height:42px;padding:0;
   border-radius:50%;border:1px solid rgba(232,236,247,.22);background:rgba(11,15,25,.45);
@@ -410,7 +416,8 @@ body.daylight .sound{background:rgba(255,255,255,.75);color:var(--plum);border-c
 
 </style>
 </head>
-<body>
+<body class="intro-on">
+<div class="intro" id="intro" role="button" tabindex="0" aria-label="Tap to begin"></div>
 <div class="night" id="night" aria-hidden="true">
   <div class="sky"></div>
   <canvas id="skyStatic"></canvas>
@@ -507,8 +514,12 @@ const CHARACTER_FILE  = "";               // "" uses the built-in picture. Later
 const CHARACTER_FLIP  = true;             // mirror the picture so he faces into the screen
 const PORTRAIT_FILE   = "portrait.jpg";   // portrait.png works too: the page tries both
 const PORTRAIT_ALT    = "A digital portrait";
-const MUSIC_VOLUME    = 0.6;              // 0 to 1, the calm part
-const MUSIC_VOLUME_LOUD = 0.9;            // 0 to 1, the last scene and the build
+// Music volume at each stage, 0 to 1
+const MUSIC_VOLUME_GATE  = 0.16;          // while the question is on screen
+const MUSIC_VOLUME       = 0.42;          // the list and the timeline
+const MUSIC_VOLUME_LOUD  = 0.9;           // the last scene and the build
+const MUSIC_VOLUME_AFTER = 0.6;           // calm again, under the portrait
+const MUSIC_FADE_IN      = 3;             // seconds the music takes to fade in after the first tap
 const MOON_BRIGHTNESS = 0.8;              // 0.5 (dim) to 1 (full photo brightness)
 
 // Stage 0: the gate
@@ -1139,8 +1150,11 @@ const Music = (() => {
     if (!AC) return useFallback();
     ctx = new AC();
     level = ctx.createGain(); fader = ctx.createGain();
-    level.gain.value = MUSIC_VOLUME; fader.gain.value = 0;
+    level.gain.value = MUSIC_VOLUME_GATE; fader.gain.value = 0;
     level.connect(fader); fader.connect(ctx.destination);
+    ctx.onstatechange = () => {
+      if (ctx.state === 'running' && playing) { showButton(); pump(); }
+    };
     bytes().then(decode).then(b => { buf = b; if (wanted) begin(); })
       .catch(err => { console.info('Music could not load:', err && err.message); useFallback(); });
   }
@@ -1153,8 +1167,9 @@ const Music = (() => {
     audio.addEventListener('error', () => { soundBtn.hidden = true; });
     if (wanted) playFallback();
   }
+  let fbVolume = MUSIC_VOLUME_GATE;
   function playFallback() {
-    audio.volume = MUSIC_VOLUME;
+    audio.volume = fbVolume;
     const p = audio.play();
     if (p && p.then) p.then(showButton).catch(() => {}); else showButton();
   }
@@ -1190,7 +1205,7 @@ const Music = (() => {
       const [s, d, kind] = nextSegment();
       if (kind === 'return') {          // back to calm: ease the volume down underneath it
         level.gain.setValueAtTime(level.gain.value, cursor);
-        level.gain.linearRampToValueAtTime(MUSIC_VOLUME, cursor + 5);
+        level.gain.linearRampToValueAtTime(MUSIC_VOLUME_AFTER, cursor + 5);
       }
       play(s, d, cursor, false);
       cursor += d;
@@ -1205,13 +1220,31 @@ const Music = (() => {
     play(s, d, cursor, true); cursor += d;
     pump();
     timer = setInterval(pump, 250);
-    if (!muted && !held) setGain(fader.gain, 1, 2.5);
-    showButton();
+    if (!muted && !held) {
+      // gentle 3-second fade-in: starts almost silent and swells slowly
+      const n = 64, curve = new Float32Array(n);
+      for (let i = 0; i < n; i++) curve[i] = Math.pow(i / (n - 1), 2.5);
+      fader.gain.cancelScheduledValues(ctx.currentTime);
+      fader.gain.setValueAtTime(0, ctx.currentTime);
+      fader.gain.setValueCurveAtTime(curve, ctx.currentTime + 0.02, MUSIC_FADE_IN);
+    }
+    if (ctx.state === 'running') showButton();
   }
+
+  // Browsers only allow sound after the visitor touches, clicks or types something.
+  // Try straight away, and otherwise start on the very first touch or key press.
+  function unlock() {
+    wanted = true;
+    if (muted || held) return;
+    if (fallback) { if (audio.paused) playFallback(); return; }
+    if (ctx && ctx.state !== 'running') { const r = ctx.resume(); if (r && r.catch) r.catch(() => {}); }
+  }
+  ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown']
+    .forEach(t => addEventListener(t, unlock, { capture: true, passive: true }));
 
   return {
     init,
-    // Call from inside the tap/submit that opens the storybook
+    // Called as soon as the page loads
     start() {
       wanted = true;
       if (fallback) return playFallback();
@@ -1219,9 +1252,16 @@ const Music = (() => {
       const r = ctx.resume(); if (r && r.catch) r.catch(() => {});
       if (buf) begin();
     },
+    // The right answer was entered: up from the quiet gate level
+    open() {
+      unlock();
+      if (fallback) { fbVolume = MUSIC_VOLUME; audio.volume = fbVolume; return; }
+      if (ctx) setGain(level.gain, MUSIC_VOLUME, 2.5);
+    },
     // The character comes out for the last time: turn it up
     louder() {
       if (fallback || !ctx) return;
+      if (fallback) { fbVolume = MUSIC_VOLUME_LOUD; audio.volume = fbVolume; return; }
       setGain(level.gain, MUSIC_VOLUME_LOUD, 3);
     },
     // From the next phrase: the 4:25 lead-in, the build from 4:30, the grand ending, then calm again
@@ -1262,7 +1302,7 @@ gateCard.addEventListener('submit', (e) => {
   if (!v) { gateMsg.textContent = EMPTY_ANSWER_MSG; shakeGate(); input.focus(); return; }
   if (CORRECT_ANSWERS.map(normalise).includes(v)) {
     state.opening = true;
-    Music.start();                      // called directly inside the click/submit gesture
+    Music.open();                       // music gets louder once the answer is right
     input.blur();
     openStorybook();
   } else {
@@ -1813,7 +1853,19 @@ function init() {
   arcUpdate(performance.now());
   requestAnimationFrame(loop);
 
-  if (finePointer) setTimeout(() => input.focus({ preventScroll: true }), 900);
+  // The black screen: one tap fades it away and starts the music
+  const intro = $('#intro');
+  const begin = () => {
+    if (intro.classList.contains('gone')) return;
+    Music.start();
+    intro.classList.add('gone');
+    document.body.classList.remove('intro-on');
+    setTimeout(() => intro.remove(), 1500);
+    if (finePointer) setTimeout(() => input.focus({ preventScroll: true }), 1300);
+  };
+  intro.addEventListener('click', begin);
+  intro.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); begin(); } });
+  intro.focus({ preventScroll: true });
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
